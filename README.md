@@ -1,4 +1,4 @@
 # Morphological_analyzer
 
-# 制約
-pep8[URL]に準拠する
+# ルール
+pep8[https://hg.python.org/peps/file/tip/pep-0008.txt]に準拠する
