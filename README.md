@@ -4,5 +4,8 @@
 pep8 https://hg.python.org/peps/file/tip/pep-0008.txt に準拠する
 
 # 使用する辞書
-biglam_prog_dict
+biglam_prob.dict
 lex_prob.dict
+
+#実行手順
+$ python hmm_pos_tagger.py biglam_prob.dict lex_prob.dict
