@@ -8,4 +8,4 @@ bigram_prob.dict
 lex_prob.dict
 
 # 実行手順
-$ python hmm_pos_tagger.py bigram_prob.dict lex_prob.dict
+`$ python hmm_pos_tagger.py bigram_prob.dict lex_prob.dict`
