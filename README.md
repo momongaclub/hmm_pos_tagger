@@ -9,3 +9,6 @@ lex_prob.dict
 
 # 実行手順
 `$ python hmm_pos_tagger.py bigram_prob.dict lex_prob.dict input.txt`
+
+# 参考図書
+自然言語処理の基礎/著者　奥村　学先生/コロナ社
