@@ -15,7 +15,7 @@ def parse():
     parser.add_argument('lex_prob_dict',
                         help = 'Lexical Generation Probability dictionary')
     parser.add_argument('input_file',
-                        help = 'input_sentence')
+                        help = 'input_sentences')
 
     args = parser.parse_args()
 
@@ -67,12 +67,14 @@ def load_input_file(fname):
 
 
 def update_ratis(max_prob, word, before_word):
-    
+
     ratis.append([max_prob, word, before_word])
+
     return 0
 
 
 def back(ratis, max_word_class):
+
     tmp = max_word_class
     answer = []
 
@@ -104,12 +106,7 @@ def calc(sentence, lex_prob, bigram_prob):
                     max_prob = value
                     max_word_class = before_word_class
                     max_now_word_class = word_class
-            """
-            print('max_prob:', max_prob)
-            print('now_word:', words[i])
-            print('maxword_class', max_word_class)
-            print('now_max_word_class', max_now_word_class)
-            """
+
             lex_prob[words[i]][word_class] = max_prob
             update_ratis(max_prob, words[i]+'/'+word_class,
                         words[i-1]+'/'+max_word_class)
