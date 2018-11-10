@@ -37,7 +37,7 @@ def load_bigram_prob_dict(fname):
 
 def load_lex_prob_dict(fname):
 
-    lex_prob = {'F': {'F': 1.0}}
+    lex_prob = {'F': {'F': 1.0}} # it have to insert first token before a sentence
 
     with open(fname, 'r') as fp:
         for line in fp:
@@ -58,11 +58,12 @@ def load_input_file(fname):
     sentences = []
 
     with open(fname, 'r') as fp:
-        for line in fp:
-            line = line.rstrip()
-            tmp = line.split()
-            tmp.insert(0, 'F')
-            sentences.append(tmp)
+        for sentence in fp:
+            sentence = sentence.rstrip()
+            words = sentence.split()
+            words.insert(0, 'F') # it have to insert first token before a sentence
+            sentences.append(words)
+
     return sentences
 
 
@@ -75,13 +76,13 @@ def update_ratis(max_prob, word, before_word):
 
 def back(ratis, max_word_class):
 
-    tmp = max_word_class
     answer = []
 
-    for l in reversed(ratis):
-        if l[1] == tmp:
-            answer.append(l[1])
-            tmp = l[2]
+    for ratis_element in reversed(ratis):
+        if ratis_element[1] == max_word_class:
+            answer.append(ratis_element[1])
+            max_word_class = ratis_element[2]
+
     return list(reversed(answer))
 
 
