@@ -114,6 +114,14 @@ def calc(sentence, lex_prob, bigram_prob):
     return words[i]+'/'+max_now_word_class
 
 
+def viterbi(sentence, lex_prob, bigram_prob):
+    for word in sentence[1::]: # have to ignore first word
+        for pos in lex_prob[word]:
+            max_prob = -1
+            max_word_class = ''
+            #for before_pos in lex_prob[]
+
+
 def main():
     args = parse()
     lex_prob = load_lex_prob_dict(args.lex_prob_dict)
@@ -122,6 +130,8 @@ def main():
     
     for sentence in sentences:
         max_word_class = calc(sentence, lex_prob, bigram_prob)
+        #calc(sentence, lex_prob, bigram_prob)
+        #viterbi(sentence, lex_prob, bigram_prob)
         answer = back(ratis, max_word_class)
         print('-----answer-----')
         print(answer)
