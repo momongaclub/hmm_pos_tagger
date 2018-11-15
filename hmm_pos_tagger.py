@@ -37,7 +37,7 @@ def load_bigram_prob_dict(fname):
 
 def load_lex_prob_dict(fname):
 
-    lex_prob = {'F': {'F': 1.0}} # it have to insert first token before a sentence
+    lex_prob = {'F': {'F': 1.0}} # it has to insert first token before a sentence
 
     with open(fname, 'r') as fp:
         for line in fp:
@@ -61,7 +61,7 @@ def load_input_file(fname):
         for sentence in fp:
             sentence = sentence.rstrip()
             words = sentence.split()
-            words.insert(0, 'F') # it have to insert first token before a sentence
+            words.insert(0, 'F') # it has to insert first token before a sentence
             sentences.append(words)
 
     return sentences
@@ -112,14 +112,6 @@ def calc(sentence, lex_prob, bigram_prob):
             update_ratis(max_prob, words[i]+'/'+word_class,
                         words[i-1]+'/'+max_word_class)
     return words[i]+'/'+max_now_word_class
-
-
-def viterbi(sentence, lex_prob, bigram_prob):
-    for word in sentence[1::]: # have to ignore first word
-        for pos in lex_prob[word]:
-            max_prob = -1
-            max_word_class = ''
-            #for before_pos in lex_prob[]
 
 
 def main():
