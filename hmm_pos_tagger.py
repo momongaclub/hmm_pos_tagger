@@ -122,8 +122,6 @@ def main():
     
     for sentence in sentences:
         max_word_class = calc(sentence, lex_prob, bigram_prob)
-        #calc(sentence, lex_prob, bigram_prob)
-        #viterbi(sentence, lex_prob, bigram_prob)
         answer = back(ratis, max_word_class)
         print('-----answer-----')
         print(answer)
