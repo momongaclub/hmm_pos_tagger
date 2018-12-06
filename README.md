@@ -1,10 +1,7 @@
 # hmm_pos_tagger
 
 # 概要
-入力された文に対して形態素解析を行い解析結果を出力するプログラム.  
-
-# ルール
-pep8 https://hg.python.org/peps/file/tip/pep-0008.txt に準拠する
+隠れマルコフモデルによる英語形態素解析プログラム  
 
 # 使用する辞書
 bigram_prob.dict  
