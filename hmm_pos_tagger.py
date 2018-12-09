@@ -14,46 +14,46 @@ def parse():
                         help = 'bigram Probability dictionaly')
     parser.add_argument('lex_prob_dict',
                         help = 'Lexical Generation Probability dictionary')
-    parser.add_argument('input_file',
-                        help = 'input_sentences')
+    parser.add_argument('corpus',
+                        help = 'corpus')
 
     args = parser.parse_args()
 
     return args
 
 
-def load_bigram_prob_dict(fname):
+def load_bigram2prob(fname):
 
-    bigram_prob = {}
+    bigram2prob = {}
 
     with open(fname, 'r') as fp:
         for line in fp:
             line = line.rstrip()
             bigram, prob = line.split(DICT_DELIMITER)
-            bigram_prob[bigram] = float(prob)
+            bigram2prob[bigram] = float(prob)
 
-    return bigram_prob
+    return bigram2prob
 
 
-def load_lex_prob_dict(fname):
+def load_lex2prob(fname):
 
-    lex_prob = {'F': {'F': 1.0}} # it has to insert first token before a sentence
+    lex2prob = {'F': {'F': 1.0}} # it has to insert first token before a sentence
 
     with open(fname, 'r') as fp:
         for line in fp:
             line = line.rstrip()
             word_pos, prob = line.split(DICT_DELIMITER)
             word, pos = word_pos.split(WORD_POS_SEPARATOR)
-            dic = lex_prob.get(word)
+            dic = lex2prob.get(word)
             if dic == None:
-                lex_prob[word] = {pos: float(prob)}
+                lex2prob[word] = {pos: float(prob)}
             else:
-                lex_prob[word].update({pos: float(prob)})
+                lex2prob[word].update({pos: float(prob)})
 
-    return lex_prob
+    return lex2prob
 
 
-def load_input_file(fname):
+def load_sentences(fname):
 
     sentences = []
 
@@ -116,12 +116,12 @@ def calc(sentence, lex_prob, bigram_prob):
 
 def main():
     args = parse()
-    lex_prob = load_lex_prob_dict(args.lex_prob_dict)
-    bigram_prob = load_bigram_prob_dict(args.bigram_prob_dict)
-    sentences = load_input_file(args.input_file)
+    lex2prob = load_lex2prob(args.lex_prob_dict)
+    bigram2prob = load_bigram2prob(args.bigram_prob_dict)
+    sentences = load_sentences(args.corpus)
     
     for sentence in sentences:
-        max_word_class = calc(sentence, lex_prob, bigram_prob)
+        max_word_class = calc(sentence, lex2prob, bigram2prob)
         answer = back(ratis, max_word_class)
         print('-----answer-----')
         print(answer)

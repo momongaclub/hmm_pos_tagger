@@ -1,7 +1,5 @@
-# hmm_pos_tagger
-
-# 概要
-隠れマルコフモデルによる英語形態素解析プログラム  
+# hmm_pos_tagger  
+隠れマルコフモデルを用いた英語形態素解析プログラム  
 
 # 使用する辞書
 bigram_prob.dict  
