@@ -1,130 +1,96 @@
-import sys
-import re
 import argparse
+import Dictionary
 
-ratis = []
 DICT_DELIMITER = '\t'
 WORD_POS_SEPARATOR = '/'
 
 
 def parse():
-
     parser = argparse.ArgumentParser()
     parser.add_argument('bigram_prob_dict',
                         help = 'bigram Probability dictionaly')
     parser.add_argument('lex_prob_dict',
                         help = 'Lexical Generation Probability dictionary')
-    parser.add_argument('corpus',
-                        help = 'corpus')
-
+    parser.add_argument('input_file',
+                        help = 'input_sentences')
     args = parser.parse_args()
-
     return args
 
 
-def load_bigram2prob(fname):
-
-    bigram2prob = {}
-
-    with open(fname, 'r') as fp:
-        for line in fp:
-            line = line.rstrip()
-            bigram, prob = line.split(DICT_DELIMITER)
-            bigram2prob[bigram] = float(prob)
-
-    return bigram2prob
-
-
-def load_lex2prob(fname):
-
-    lex2prob = {'F': {'F': 1.0}} # it has to insert first token before a sentence
-
-    with open(fname, 'r') as fp:
-        for line in fp:
-            line = line.rstrip()
-            word_pos, prob = line.split(DICT_DELIMITER)
-            word, pos = word_pos.split(WORD_POS_SEPARATOR)
-            dic = lex2prob.get(word)
-            if dic == None:
-                lex2prob[word] = {pos: float(prob)}
-            else:
-                lex2prob[word].update({pos: float(prob)})
-
-    return lex2prob
-
-
-def load_sentences(fname):
-
+def load_input_file(fname):
     sentences = []
-
     with open(fname, 'r') as fp:
         for sentence in fp:
-            sentence = sentence.rstrip()
-            words = sentence.split()
-            words.insert(0, 'F') # it has to insert first token before a sentence
-            sentences.append(words)
-
+            sentence = sentence.rstrip('\n')
+            sentence = sentence.split(' ')
+            sentence.insert(0, 'F')
+            sentences.append(sentence)
     return sentences
 
 
-def update_ratis(max_prob, word, before_word):
+class Hmm_pos_tagger():
 
-    ratis.append([max_prob, word, before_word])
+    def __init__(self):
+        self.lattice = []
+        self.lex2prob = {}
+        self.bigram2prob = {}
+        self.sentences = []
+        self.max_word = ""
+        self.answer = []
 
-    return 0
-
-
-def back(ratis, max_word_class):
-
-    answer = []
-
-    for ratis_element in reversed(ratis):
-        if ratis_element[1] == max_word_class:
-            answer.append(ratis_element[1])
-            max_word_class = ratis_element[2]
-
-    return list(reversed(answer))
-
-
-def calc(sentence, lex_prob, bigram_prob):
-    words = sentence
-    for i in range(1, len(words)):
-        for word_class in lex_prob[words[i]]:
-            max_prob = -1
-            max_word_class = ''
-            for before_word_class in lex_prob[words[i-1]]:
-                bigram_name = before_word_class+'-'+word_class
-                value = 0
-                tmp = lex_prob[words[i-1]]
-                if bigram_prob.get(bigram_name):
-                    value = bigram_prob[bigram_name] * \
-                            tmp[before_word_class] * \
-                            lex_prob[words[i]][word_class]
-                else:
+    def viterbi_algo(self, sentence, lex_prob, bigram_prob):
+        self.lattice = []
+        words = sentence
+        for i in range(1, len(words)):
+            for word_class in lex_prob[words[i]]:
+                max_prob = -1
+                max_word_class = ''
+                for before_word_class in lex_prob[words[i-1]]:
+                    bigram_name = before_word_class+'-'+word_class
                     value = 0
+                    tmp = lex_prob[words[i-1]]
+                    if bigram_prob.get(bigram_name):
+                        value = bigram_prob[bigram_name] * \
+                                tmp[before_word_class] * \
+                                lex_prob[words[i]][word_class]
+                    else:
+                        value = 0
 
-                if max_prob <= value:
-                    max_prob = value
-                    max_word_class = before_word_class
-                    max_now_word_class = word_class
+                    if max_prob <= value:
+                        max_prob = value
+                        max_word_class = before_word_class
+                        max_now_word_class = word_class
 
-            lex_prob[words[i]][word_class] = max_prob
-            update_ratis(max_prob, words[i]+'/'+word_class,
-                        words[i-1]+'/'+max_word_class)
-    return words[i]+'/'+max_now_word_class
+                lex_prob[words[i]][word_class] = max_prob
+                self.lattice.append([max_prob, words[i]+'/'+word_class, words[i-1]+'/'+max_word_class])
+        self.max_word = words[i]+'/'+max_now_word_class
+
+
+    def search_best_path(self):
+        answer = []
+        for part in reversed(self.lattice):
+            if part[1] == self.max_word:
+                answer.append(part[1])
+                self.max_word = part[2]
+        self.answer = list(reversed(answer))
+
+    def __str__(self):
+        return "answer:" + str(self.answer)
 
 
 def main():
     args = parse()
-    lex2prob = load_lex2prob(args.lex_prob_dict)
-    bigram2prob = load_bigram2prob(args.bigram_prob_dict)
-    sentences = load_sentences(args.corpus)
+    sentences = load_input_file(args.input_file)
+    lex_prob = Dictionary.Lex_prob_dictionary()
+    lex_prob.load_lex_prob_dictionary(args.lex_prob_dict, sentences)
+    bigram_prob = Dictionary.Bigram_prob_dictionary()
+    bigram_prob.load_bigram_prob_dictionary(args.bigram_prob_dict)
+    hmm_pos_tagger = Hmm_pos_tagger()
     
     for sentence in sentences:
-        max_word_class = calc(sentence, lex2prob, bigram2prob)
-        answer = back(ratis, max_word_class)
-        print('-----answer-----')
-        print(answer)
-    return 0
+        hmm_pos_tagger.viterbi_algo(sentence, lex_prob.dictionary, bigram_prob.dictionary)
+        hmm_pos_tagger.search_best_path()
+        print(hmm_pos_tagger)
 
-main()
+if __name__ == '__main__':
+    main()
