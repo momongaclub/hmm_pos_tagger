@@ -11,13 +11,13 @@ def parse():
                         help = 'bigram Probability dictionaly')
     parser.add_argument('lex_prob_dict',
                         help = 'Lexical Generation Probability dictionary')
-    parser.add_argument('input_file',
-                        help = 'input_sentences')
+    parser.add_argument('target_sentences',
+                        help = 'target_sentences')
     args = parser.parse_args()
     return args
 
 
-def load_input_file(fname):
+def load_target_sentences(fname):
     sentences = []
     with open(fname, 'r') as fp:
         for sentence in fp:
@@ -67,12 +67,12 @@ class Hmm_pos_tagger():
 
 
     def search_best_path(self):
-        answer = []
+        self.answer = []
         for part in reversed(self.lattice):
             if part[1] == self.max_word:
-                answer.append(part[1])
+                self.answer.append(part[1])
                 self.max_word = part[2]
-        self.answer = list(reversed(answer))
+        self.answer = list(reversed(self.answer))
 
     def __str__(self):
         return "answer:" + str(self.answer)
@@ -80,7 +80,7 @@ class Hmm_pos_tagger():
 
 def main():
     args = parse()
-    sentences = load_input_file(args.input_file)
+    sentences = load_target_sentences(args.target_sentences)
     lex_prob = Dictionary.Lex_prob_dictionary()
     lex_prob.load_lex_prob_dictionary(args.lex_prob_dict, sentences)
     bigram_prob = Dictionary.Bigram_prob_dictionary()
